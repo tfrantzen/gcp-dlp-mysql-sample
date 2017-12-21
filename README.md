@@ -125,8 +125,8 @@ This data loss prevention inspect pipeline will:
         'use strict';
         
         // Import requirements
-        const dlp-connector = require('./dlpConnector');
-        const mysql-connector = require('./mysqlConnector');
+        const dlpConnector = require('./dlpConnector');
+        const mysqlConnector = require('./mysqlConnector');
         const nconf = require('nconf');
         
         // Import MySQL DB arguments for key.json file
@@ -172,11 +172,11 @@ This data loss prevention inspect pipeline will:
           return table;
         }
 
-        mysql-connector.executeQuery(host, db, user, pwd, 'SELECT * FROM ' + tbl, function(mysql_response) {
+        mysqlConnector.executeQuery(host, db, user, pwd, 'SELECT * FROM ' + tbl, function(mysql_response) {
           // dlp request
           var dlp_table_request = createDlpTableRequest(mysql_response);
 
-          dlp-connector.inspectTable(dlp_table_request, MIN_LIKELIHOOD, MAX_FINDINGS, INFO_TYPES, INCLUDE_QUOTES, (dlp_findings) => {
+          dlpConnector.inspectTable(dlp_table_request, MIN_LIKELIHOOD, MAX_FINDINGS, INFO_TYPES, INCLUDE_QUOTES, (dlp_findings) => {
             // Write out results
             console.log(dlp_findings);
           });
