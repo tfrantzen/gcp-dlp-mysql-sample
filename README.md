@@ -15,6 +15,9 @@ This data loss prevention inspect pipeline will:
 1. Enable the [Data Loss Prevention API][dlp-api] in your Cloud Console project.
 1. Downloaded [service account credentials][service-account] and set the
   `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to them.
+  
+        export GOOGLE_APPLICATION_CREDENTIALS = <PATH_TO_YOUR_CREDENTIALS_FILE>
+        
 1. Basic familiarity with [NodeJS][nodejs] programming.
 
 [dlp-api]: https://console.cloud.google.com/apis/api/dlp.googleapis.com/overview?project=_
@@ -24,7 +27,7 @@ This data loss prevention inspect pipeline will:
 
 ## Prepare the app
 
-1. Initialize a `package.json` file with the following command:
+1. Initialize a `package.json` file with the following command (set `server.js` as your entry point):
 
         npm init
 
