@@ -32,7 +32,7 @@ This data loss prevention inspect pipeline will:
 
         npm install --save nconf @google-cloud/dlp mysql
         
-1. Create a `server.js` file with the following constents:
+1. Create a `index.js` file with the following constents:
 
         'use strict';
         
