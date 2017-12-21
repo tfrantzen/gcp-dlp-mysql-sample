@@ -14,7 +14,7 @@ This data loss prevention inspect pipeline will:
 1. MySQL instance.
 1. Enable the [Data Loss Prevention API][dlp-api] in your Cloud Console project.
 1. Downloaded [service account credentials][service-account] and set the
-  `GOOGLE_APPLICATION_DEFAULT` environment variable to point to them.
+  `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to them.
 1. Basic familiarity with [NodeJS][nodejs] programming.
 
 [dlp-api]: https://console.cloud.google.com/apis/api/dlp.googleapis.com/overview?project=_
@@ -32,7 +32,7 @@ This data loss prevention inspect pipeline will:
 
         npm install --save nconf @google-cloud/dlp mysql
         
-1. Create a `index.js` file with the following constents:
+1. Create a `server.js` file with the following constents:
 
         'use strict';
         
