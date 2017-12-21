@@ -32,7 +32,7 @@ This data loss prevention inspect pipeline will:
 
         npm install --save nconf @google-cloud/dlp mysql
 
-1. Create a `mysql-connector.js` file with the following contents:
+1. Create a `mysqlConnector.js` file with the following contents:
 
         'use strict';
         
@@ -67,7 +67,7 @@ This data loss prevention inspect pipeline will:
           executeQuery: executeQuery
         }
         
-1. Create a `dlp-connector.js` file with the following contents:
+1. Create a `dlpConnector.js` file with the following contents:
 
         'use strict';
         
