@@ -9,7 +9,7 @@ This data loss prevention inspect pipeline will:
 * Inspect the table request for specified PII
 
 
-## Prerequisites
+## Before you begin
 
 1. MySQL instance.
 1. Enable the [Data Loss Prevention API][dlp-api] in your Cloud Console project.
@@ -31,23 +31,113 @@ This data loss prevention inspect pipeline will:
 1. Install dependencies:
 
         npm install --save nconf @google-cloud/dlp mysql
-        
-1. Create a `server.js` file with the following constents:
+
+1. Create a `mysql-connector.js` file with the following contents:
 
         'use strict';
         
-        const google_dlp_api = require('@google-cloud/dlp');
+        // import NodeJS mysql API
         const mysql = require('mysql');
-        const nconf = require('nconf');
+        
+        // method to execute query against a mysql instance
+        function executeQuery(host, db_name, user, pwd, query, cb){
+          // create connection to mysql db  
+          var connection = mysql.createConnection({
+            host: host,
+            user: user,
+            password: pwd,
+            database: db_name
+          });
 
+          // query the mysql table for query
+          connection.query(
+            query,
+            (err, results) => {
+              if (err) {
+                throw err;
+              }
+
+              cb(results);
+            }
+          );
+          connection.end();
+        }
+        
+        module.exports = {
+          executeQuery: executeQuery
+        }
+        
+1. Create a `dlp-connector.js` file with the following contents:
+
+        'use strict';
+        
+        // import the Google DLP API
+        const google_dlp_api = require('@google-cloud/dlp');
+        
+        // define the parameters for the Google DLP API
         const MIN_LIKELIHOOD = 'LIKELIHOOD_UNSPECIFIED';
         const MAX_FINDINGS = '100000';
+        
+        // What type of PII are you looking for?
         const INFO_TYPES = [
           {'name':'US_SOCIAL_SECURITY_NUMBER'},
           {'name':'EMAIL_ADDRESS'}
         ];
-        const INCLUDE_QUOTES = true;
+        
+        // Include value in response
+        const INCLUDE_QUOTES = true;  
+        
+        function inspectTable(table, minLikelihood, maxFindings, infoTypes, includeQuote, cb) {
+          // Instantiates a client
+          const dlp = new google_dlp_api.DlpServiceClient();
 
+          // Construct items to inspect
+          const items = [{'table':table}];
+
+          // Construct request
+          const request = {
+            inspectConfig: {
+              infoTypes: infoTypes,
+              minLikelihood: minLikelihood,
+              maxFindings: maxFindings,
+              includeQuote: includeQuote,
+            },
+            items: items,
+          };
+
+          // Send request to DLP api
+          dlp.inspectContent(request).then(response => {
+            // first result is the response
+            const dlp_table_result = response[0].results[0].findings;
+
+          cb(dlp_table_result);
+          }).catch(err => {
+            throw err;
+            });
+        }
+        
+        module.exports = {
+          inspectTable: inspectTable
+        }
+
+1. Create a `server.js` file with the following contents:
+
+        'use strict';
+        
+        // Import requirements
+        const dlp-connector = require('./dlp-connector');
+        const mysql-connector = require('./mysql-connector');
+        const nconf = require('nconf');
+        
+        // Import MySQL DB arguments for key.json file
+        nconf.argv().env().file('keys.json');
+        const user = nconf.get('mysqlUser');
+        const pwd = nconf.get('mysqlPwd');
+        const host = nconf.get('mysqlHost');
+        const db = nconf.get('mysqlDb');
+        const tbl = nconf.get('mysqlTable');
+        
+        // Convert MySQL response into DLP table object
         function createDlpTableRequest(mysqlResponse){
           var table = { headers:[], rows:[] };
 
@@ -82,70 +172,11 @@ This data loss prevention inspect pipeline will:
           return table;
         }
 
-        function executeQuery(host, db_name, user, pwd, query, cb){
-          // create connection to mysql db  
-          var connection = mysql.createConnection({
-            host: host,
-            user: user,
-            password: pwd,
-            database: db_name
-          });
-
-          // query the mysql table for query
-          connection.query(
-            query,
-            (err, results) => {
-              if (err) {
-                throw err;
-              }
-
-              cb(results);
-            }
-          );
-          connection.end();
-        }
-
-        function inspectTable(table, minLikelihood, maxFindings, infoTypes, includeQuote, cb) {
-          // Instantiates a client
-          const dlp = new google_dlp_api.DlpServiceClient();
-
-          // Construct items to inspect
-          const items = [{'table':table}];
-
-          // Construct request
-          const request = {
-            inspectConfig: {
-              infoTypes: infoTypes,
-              minLikelihood: minLikelihood,
-              maxFindings: maxFindings,
-              includeQuote: includeQuote,
-            },
-            items: items,
-          };
-
-          // Send request to DLP api
-          dlp.inspectContent(request).then(response => {
-            // first result is the response
-            const dlp_table_result = response[0].results[0].findings;
-
-          cb(dlp_table_result);
-          }).catch(err => {
-            throw err;
-            });
-        }
-
-        nconf.argv().env().file('keys.json');
-        const user = nconf.get('mysqlUser');
-        const pwd = nconf.get('mysqlPwd');
-        const host = nconf.get('mysqlHost');
-        const db = nconf.get('mysqlDb');
-        const tbl = nconf.get('mysqlTable');
-
-        executeQuery(host, db, user, pwd, 'SELECT * FROM ' + tbl, function(mysql_response) {
+        mysql-connector.executeQuery(host, db, user, pwd, 'SELECT * FROM ' + tbl, function(mysql_response) {
           // dlp request
           var dlp_table_request = createDlpTableRequest(mysql_response);
 
-          inspectTable(dlp_table_request, MIN_LIKELIHOOD, MAX_FINDINGS, INFO_TYPES, INCLUDE_QUOTES, (dlp_findings) => {
+          dlp-connector.inspectTable(dlp_table_request, MIN_LIKELIHOOD, MAX_FINDINGS, INFO_TYPES, INCLUDE_QUOTES, (dlp_findings) => {
             // Write out results
             console.log(dlp_findings);
           });
