@@ -1,4 +1,4 @@
-# Google Data Loss Prevent and MySQL Demo
+# Google Data Loss Prevention (DLP) and MySQL Demo
 A sample script to run Google Data Loss Prevention (DLP) API on a MySQL database
 
 
