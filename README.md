@@ -43,8 +43,8 @@ This data loss prevention inspect pipeline will:
         const MIN_LIKELIHOOD = 'LIKELIHOOD_UNSPECIFIED';
         const MAX_FINDINGS = '100000';
         const INFO_TYPES = [
-          'US_SOCIAL_SECURITY_NUMBER',
-          'EMAIL_ADDRESS'
+          {'name':'US_SOCIAL_SECURITY_NUMBER'},
+          {'name':'EMAIL_ADDRESS'}
         ];
         const INCLUDE_QUOTES = true;
 
