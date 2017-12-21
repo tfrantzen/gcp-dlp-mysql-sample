@@ -74,19 +74,6 @@ This data loss prevention inspect pipeline will:
         // import the Google DLP API
         const google_dlp_api = require('@google-cloud/dlp');
         
-        // define the parameters for the Google DLP API
-        const MIN_LIKELIHOOD = 'LIKELIHOOD_UNSPECIFIED';
-        const MAX_FINDINGS = '100000';
-        
-        // What type of PII are you looking for?
-        const INFO_TYPES = [
-          {'name':'US_SOCIAL_SECURITY_NUMBER'},
-          {'name':'EMAIL_ADDRESS'}
-        ];
-        
-        // Include value in response
-        const INCLUDE_QUOTES = true;  
-        
         function inspectTable(table, minLikelihood, maxFindings, infoTypes, includeQuote, cb) {
           // Instantiates a client
           const dlp = new google_dlp_api.DlpServiceClient();
@@ -136,6 +123,17 @@ This data loss prevention inspect pipeline will:
         const host = nconf.get('mysqlHost');
         const db = nconf.get('mysqlDb');
         const tbl = nconf.get('mysqlTable');
+        
+        // define the parameters for the Google DLP API
+        const MIN_LIKELIHOOD = 'LIKELIHOOD_UNSPECIFIED';
+        const MAX_FINDINGS = '100000';
+        // What type of PII are you looking for?
+        const INFO_TYPES = [
+          {'name':'US_SOCIAL_SECURITY_NUMBER'},
+          {'name':'EMAIL_ADDRESS'}
+        ];
+        // Include value in response
+        const INCLUDE_QUOTES = true;  
         
         // Convert MySQL response into DLP table object
         function createDlpTableRequest(mysqlResponse){
