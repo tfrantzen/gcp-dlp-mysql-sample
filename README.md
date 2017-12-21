@@ -125,8 +125,8 @@ This data loss prevention inspect pipeline will:
         'use strict';
         
         // Import requirements
-        const dlp-connector = require('./dlp-connector');
-        const mysql-connector = require('./mysql-connector');
+        const dlp-connector = require('./dlpConnector');
+        const mysql-connector = require('./mysqlConnector');
         const nconf = require('nconf');
         
         // Import MySQL DB arguments for key.json file
