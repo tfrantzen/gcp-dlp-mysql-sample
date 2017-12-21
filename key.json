@@ -1,0 +1,7 @@
+{
+   "mysqlHost":"YOUR_MYSQL_HOST",
+   "mysqlDb":"YOUR_MYSQL_DATABASE",
+   "mysqlTable":"YOUR_MYSQL_TABLE",
+   "mysqlUser":"YOUR_MYSQL_USERNAME",
+   "mysqlPwd":"YOUR_MYSQL_PASSWORD"
+ }
